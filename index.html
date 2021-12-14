@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset= "utf-8">
+        <title>Token Tracker</title>
+        <script src='https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js'></script>
+    </head>
+    <body>
+        <div>
+            <p>Wallet address - <span id="wallet-adddress"></span></p>
+            <p>Token</p>
+        </div>
+        <script type="text/javascript">
+            var account = null;
+            var contract = null;
+            const ABI = [{"constant":true,"inputs":[{"name":"user","type":"address"},
+                        {"name":"token","type":"address"}],
+                        "name":"tokenBalance","outputs":[{"name":"","type":"uint256"}],
+                        "payable":false,"stateMutability":"view","type":"function"},
+                        {"constant":true,"inputs":[{"name":"users","type":"address[]"},
+                        {"name":"tokens","type":"address[]"}],
+                        "name":"balances","outputs":[{"name":"","type":"uint256[]"}],
+                        "payable":false,"stateMutability":"view","type":"function"},
+                        {"payable":true,"stateMutability":"payable","type":"fallback"}];
+            const ADDRESS = "0x2352c63A83f9Fd126af8676146721Fa00924d7e4";
+            (async () => {
+                await window.ethereum.send('eth_requestAccounts');
+                window.web3 = new Web3(window.ethereum);
+
+                var accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                document.getElementById('wallet-address').textContent = account;
+
+                contract = new web3.eth.Contract(ABI, ADDRESS);
+
+                getTokenBalance();
+                // here we put in the methods from the contract that we want from the Contract
+            })();
+
+            // deploy the bytecode
+
+            const deploy = async(abi, bytecode) => {
+                var deployingContract = new web3.eth.Contract(abi).deploy({
+                    data: bytecode,
+                    arguments: []
+                });
+
+                var estimatedGas = await deployingContract.estimatedGas();
+
+                var deployedContract = await deployingContract.send({
+                    from: account,
+                    gas: estimatedGas 
+                })
+
+                console.log('Address of Contract - ' + deployedContract.options.address);
+
+                return deployedContract.options.address;
+            }
+
+            const getTokenBalance = () => {
+
+            }
+
+            //adding comment because I guess this index didn't push
+        </script>
+    </body>
+</html>
